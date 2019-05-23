@@ -8,81 +8,66 @@ namespace GraduationTracker.Tests.Unit
     [TestClass]
     public class GraduationTrackerTests
     {
+        GraduationTracker tracker = new GraduationTracker();
+
+        //Moved test data to repository to avoid repitition in other Test methods
+        readonly Diploma diploma = Repository.GetDiplomaTestData();
+        readonly Student[] students = Repository.GetAllStudentTestData();
+
         [TestMethod]
-        public void TestHasCredits()
+        //Test to check if the test data contains any graduate student;
+        public void TestHasgraduate()
         {
-            var tracker = new GraduationTracker();
-
-            var diploma = new Diploma
-            {
-                Id = 1,
-                Credits = 4,
-                Requirements = new int[] { 100, 102, 103, 104 }
-            };
-
-            var students = new[]
-            {
-               new Student
-               {
-                   Id = 1,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=95 },
-                        new Course{Id = 2, Name = "Science", Mark=95 },
-                        new Course{Id = 3, Name = "Literature", Mark=95 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=95 }
-                   }
-               },
-               new Student
-               {
-                   Id = 2,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=80 },
-                        new Course{Id = 2, Name = "Science", Mark=80 },
-                        new Course{Id = 3, Name = "Literature", Mark=80 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=80 }
-                   }
-               },
-            new Student
-            {
-                Id = 3,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=50 },
-                    new Course{Id = 2, Name = "Science", Mark=50 },
-                    new Course{Id = 3, Name = "Literature", Mark=50 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=50 }
-                }
-            },
-            new Student
-            {
-                Id = 4,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=40 },
-                    new Course{Id = 2, Name = "Science", Mark=40 },
-                    new Course{Id = 3, Name = "Literature", Mark=40 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=40 }
-                }
-            }
-
-
-            //tracker.HasGraduated()
-        };
-            
             var graduated = new List<Tuple<bool, STANDING>>();
 
-            foreach(var student in students)
+            foreach (var student in students)
             {
-                graduated.Add(tracker.HasGraduated(diploma, student));      
+                graduated.Add(tracker.HasGraduated(diploma, student));
             }
 
-            
-            Assert.IsFalse(graduated.Any());
-
+            Assert.IsTrue(graduated.Any(x => x.Item1 == true));
         }
 
+        [TestMethod]
+        //Test to check if the test data contains any student that has all 4 credits;
+        public void TestHasCredits()
+        {
+            var credits = new List<Tuple<bool, Student>>();
 
+            foreach (var student in students)
+            {
+                credits.Add(tracker.HasCredit(diploma, student));
+            }
+
+            Assert.IsTrue(credits.Any(x => x.Item1 == true));
+        }
+
+        [TestMethod]
+        //Test to check if the test data contains any student that is not graduate;
+        public void TestHasNograduate()
+        {
+            var graduated = new List<Tuple<bool, STANDING>>();
+
+            foreach (var student in students)
+            {
+                graduated.Add(tracker.HasGraduated(diploma, student));
+            }
+
+            Assert.IsTrue(graduated.Any(x => x.Item1 == false));
+        }
+
+        [TestMethod]
+        //Test to check if the test data contains any student that has no credit or all 4;
+        public void TestHasNoCredits()
+        {
+            var credits = new List<Tuple<bool, Student>>();
+
+            foreach (var student in students)
+            {
+                credits.Add(tracker.HasCredit(diploma, student));
+            }
+
+            Assert.IsTrue(credits.Any(x => x.Item1 == false));
+        }
     }
 }

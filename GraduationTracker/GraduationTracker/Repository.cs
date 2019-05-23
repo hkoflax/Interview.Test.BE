@@ -11,47 +11,19 @@ namespace GraduationTracker
         public static Student GetStudent(int id)
         {
             var students = GetStudents();
-            Student student = null;
-
-            for (int i = 0; i < students.Length; i++)
-            {
-                if (id == students[i].Id)
-                {
-                    student = students[i];
-                }
-            }
-            return student;
+            return students.SingleOrDefault(s => s.Id==id);
         }
 
         public static Diploma GetDiploma(int id)
         {
             var diplomas = GetDiplomas();
-            Diploma diploma = null;
-
-            for (int i = 0; i < diplomas.Length; i++)
-            {
-                if (id == diplomas[i].Id)
-                {
-                    diploma = diplomas[i];
-                }
-            }
-            return diploma;
-
+            return diplomas.SingleOrDefault(d => d.Id == id);
         }
 
         public static Requirement GetRequirement(int id)
         {
             var requirements = GetRequirements();
-            Requirement requirement = null;
-
-            for (int i = 0; i < requirements.Length; i++)
-            {
-                if (id == requirements[i].Id)
-                {
-                    requirement = requirements[i];
-                }
-            }
-            return requirement;
+            return requirements.SingleOrDefault(r => r.Id == id);
         }
 
 
@@ -69,9 +41,9 @@ namespace GraduationTracker
         }
 
         public static Requirement[] GetRequirements()
-        {   
-                return new[]
-                {
+        {
+            return new[]
+            {
                     new Requirement{Id = 100, Name = "Math", MinimumMark=50, Courses = new int[]{1}, Credits=1 },
                     new Requirement{Id = 102, Name = "Science", MinimumMark=50, Courses = new int[]{2}, Credits=1 },
                     new Requirement{Id = 103, Name = "Literature", MinimumMark=50, Courses = new int[]{3}, Credits=1},
@@ -128,6 +100,21 @@ namespace GraduationTracker
             }
 
             };
+        }
+
+        public static Student[] GetAllStudentTestData()
+        {
+            return new[]
+            {
+                GetStudent(1),
+                GetStudent(2),
+                GetStudent(3),
+                GetStudent(4)
+            };
+        }
+        public static Diploma GetDiplomaTestData()
+        {
+            return GetDiploma(1);
         }
     }
 
