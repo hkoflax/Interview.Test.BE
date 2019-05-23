@@ -10,56 +10,36 @@ namespace GraduationTracker
     {   
         public Tuple<bool, STANDING>  HasGraduated(Diploma diploma, Student student)
         {
-            var credits = 0;
             var average = 0;
-        
-            for(int i = 0; i < diploma.Requirements.Length; i++)
+            foreach (var diplomaRequirement in diploma.Requirements)
             {
-                for(int j = 0; j < student.Courses.Length; j++)
-                {
-                    var requirement = Repository.GetRequirement(diploma.Requirements[i]);
-
-                    for (int k = 0; k < requirement.Courses.Length; k++)
-                    {
-                        if (requirement.Courses[k] == student.Courses[j].Id)
-                        {
-                            average += student.Courses[j].Mark;
-                            if (student.Courses[j].Mark > requirement.MinimumMark)
-                            {
-                                credits += requirement.Credits;
-                            }
-                        }
-                    }
-                }
+                var courseRequirement = Repository.GetRequirement(diplomaRequirement);
+                var studentMark = student.Courses.Single(c=> c.Name==courseRequirement.Name).Mark;
+                average += studentMark;
             }
 
-            average = average / student.Courses.Length;
+            average /= student.Courses.Length;
 
-            var standing = STANDING.None;
+            if (average < 50) return new Tuple<bool, STANDING>(false, STANDING.Remedial);
+            else if (average < 80) return new Tuple<bool, STANDING>(true, STANDING.Average);
+            else if (average < 95) return new Tuple<bool, STANDING>(true, STANDING.SumaCumLaude);
+            else return new Tuple<bool, STANDING>(true, STANDING.MagnaCumLaude);
+        }
 
-            if (average < 50)
-                standing = STANDING.Remedial;
-            else if (average < 80)
-                standing = STANDING.Average;
-            else if (average < 95)
-                standing = STANDING.MagnaCumLaude;
-            else
-                standing = STANDING.MagnaCumLaude;
-
-            switch (standing)
+        public Tuple<bool, Student> HasCredit(Diploma diploma, Student student)
+        {
+            var credits = 0;
+            foreach (var diplomaRequirement in diploma.Requirements)
             {
-                case STANDING.Remedial:
-                    return new Tuple<bool, STANDING>(false, standing);
-                case STANDING.Average:
-                    return new Tuple<bool, STANDING>(true, standing);
-                case STANDING.SumaCumLaude:
-                    return new Tuple<bool, STANDING>(true, standing);
-                case STANDING.MagnaCumLaude:
-                    return new Tuple<bool, STANDING>(true, standing);
-
-                default:
-                    return new Tuple<bool, STANDING>(false, standing);
-            } 
+                var courseRequirement = Repository.GetRequirement(diplomaRequirement);
+                var studentMark = student.Courses.Single(c => c.Name == courseRequirement.Name).Mark;
+                if (studentMark > courseRequirement.MinimumMark)
+                {
+                    credits += courseRequirement.Credits;
+                }
+            }
+            if (credits < 4) return new Tuple<bool, Student>(false, student);
+            else return new Tuple<bool, Student> (true, student);
         }
     }
 }
